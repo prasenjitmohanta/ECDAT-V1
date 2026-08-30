@@ -1,0 +1,27 @@
+# Build Directories
+build/
+build_ast/
+bin/
+*.app/
+*.o
+*.a
+*.dylib
+*.so
+*.dll
+*.exe
+
+# macOS
+.DS_Store
+*.swp
+
+# IDEs
+.idea/
+.vscode/
+.qtcreator/
+*.pro.user
+CMakeLists.txt.user
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/

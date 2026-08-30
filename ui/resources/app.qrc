@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file>styles/ecdat_dark.qss</file>
+    <file>styles/ecdat_light.qss</file>
+  </qresource>
+</RCC>

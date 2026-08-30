@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.20)
+project(ECDAT_ENGINE CXX C)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# 1. Include CPM package manager
+include(cmake/CPM.cmake)
+
+# 2. Pull cpp-tree-sitter wrapper
+CPMAddPackage(
+  NAME cpp-tree-sitter
+  GITHUB_REPOSITORY debasish26/cpp-tree-sitter
+  GIT_TAG main
+)
+
+# 3. Pull Tree-Sitter Language Grammars
+add_grammar_from_repo(
+  NAME tree-sitter-cpp
+  REPO https://github.com/tree-sitter/tree-sitter-cpp.git
+  GIT_TAG v0.20.0
+)
+
+add_grammar_from_repo(
+  NAME tree-sitter-python
+  REPO https://github.com/tree-sitter/tree-sitter-python.git
+  GIT_TAG v0.20.0
+)
+
+# 4. Create Complete ECDAT Multi-Stage Core Library
+add_library(ecdat_core STATIC
+  src/ast_parser.cpp
+  src/yara_scanner.cpp
+  src/ml_bridge.cpp
+)
+
+target_include_directories(ecdat_core PUBLIC include)
+target_link_libraries(ecdat_core PUBLIC 
+  cpp-tree-sitter 
+  tree-sitter-cpp 
+  tree-sitter-python
+)
+
+# 5. Build Master ECDAT Engine Executable
+add_executable(ecdat_engine src/main.cpp)
+target_link_libraries(ecdat_engine PRIVATE ecdat_core)
+target_link_options(ecdat_engine PRIVATE -static-libgcc -static-libstdc++ -static)

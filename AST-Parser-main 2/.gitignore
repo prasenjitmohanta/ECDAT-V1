@@ -1,0 +1,12 @@
+build/
+.cache/
+*.exe
+*.o
+*.obj
+*.a
+*.lib
+compile_commands.json
+.vscode/
+.idea/
+models/*.pkl
+

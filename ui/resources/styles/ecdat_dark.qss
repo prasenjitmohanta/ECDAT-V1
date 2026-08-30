@@ -1,0 +1,532 @@
+/* ================================================================
+   ecdat_dark.qss  —  ECDAT Dark Mode (Codeforces Dark Style)
+   ────────────────────────────────────────────────────────────
+   Palette:
+     Canvas Base:      #121212 (Clean Dark Background)
+     Card Surface:     #1E1E1E (Dark Card Panel)
+     Card Header:      #262626 (Header Band)
+     Border Line:      #333333 (Subtle Dark Border)
+     Primary Blue:     #3B82F6 (Codeforces Blue)
+     Critical Red:     #EF4444
+     Warning Amber:    #F59E0B
+     Safe Green:       #10B981
+     Text Primary:     #F3F4F6
+     Text Secondary:   #9CA3AF
+   ================================================================ */
+
+* {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, "SF Pro Text", sans-serif;
+    font-size: 12px;
+}
+
+QWidget {
+    background-color: #121212;
+    color: #F3F4F6;
+}
+
+QMainWindow {
+    background-color: #121212;
+}
+
+/* ── Menu Bar ──────────────────────────────────────────────── */
+QMenuBar {
+    background-color: #1E1E1E;
+    color: #CBD5E1;
+    border-bottom: 1px solid #2D2D2D;
+    padding: 3px 10px;
+    font-size: 12px;
+}
+QMenuBar::item {
+    padding: 4px 10px;
+    border-radius: 3px;
+}
+QMenuBar::item:selected {
+    background-color: #2D2D2D;
+    color: #FFFFFF;
+}
+QMenu {
+    background-color: #1E1E1E;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    padding: 4px;
+}
+QMenu::item {
+    padding: 6px 20px;
+    border-radius: 3px;
+    color: #E2E8F0;
+}
+QMenu::item:selected {
+    background-color: #3B82F6;
+    color: #FFFFFF;
+}
+QMenu::separator {
+    height: 1px;
+    background-color: #2D2D2D;
+    margin: 4px 6px;
+}
+
+/* ── Top Header Bar ────────────────────────────────────────── */
+#headerBar {
+    background-color: #1A1A1A;
+    border-bottom: 1px solid #2D2D2D;
+}
+
+#brandLogo {
+    background: transparent;
+}
+
+/* ── Navigation Tabs ───────────────────────────────────────── */
+#navGroup {
+    background-color: #121212;
+    border: 1px solid #2D2D2D;
+    border-radius: 4px;
+}
+
+#navPill {
+    background: transparent;
+    color: #94A3B8;
+    border: none;
+    border-radius: 3px;
+    padding: 6px 14px;
+    font-weight: 700;
+    font-size: 11px;
+}
+#navPill:hover {
+    background-color: #222222;
+    color: #FFFFFF;
+}
+#navPill:checked {
+    background-color: #3B82F6;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+/* ── Theme Toggle Button (Sun/Moon) ────────────────────────── */
+#btnThemeToggle {
+    background-color: #1E1E1E;
+    color: #F3F4F6;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 2px 10px;
+}
+#btnThemeToggle:hover {
+    background-color: #2D2D2D;
+    border-color: #4B5563;
+}
+
+#statusReady {
+    color: #10B981;
+    font-weight: 700;
+    font-size: 11px;
+    background-color: #064E3B;
+    border: 1px solid #059669;
+    border-radius: 3px;
+    padding: 0 10px;
+}
+#statusScanning {
+    color: #F59E0B;
+    font-weight: 700;
+    font-size: 11px;
+    background-color: #451A03;
+    border: 1px solid #B45309;
+    border-radius: 3px;
+    padding: 0 10px;
+}
+#statusComplete {
+    color: #60A5FA;
+    font-weight: 700;
+    font-size: 11px;
+    background-color: #1E3A8A;
+    border: 1px solid #2563EB;
+    border-radius: 3px;
+    padding: 0 10px;
+}
+
+/* ── Summary Cards ─────────────────────────────────────────── */
+#heroCardCrit {
+    background-color: #1E1E1E;
+    border: 1px solid #2D2D2D;
+    border-top: 3px solid #EF4444;
+    border-radius: 4px;
+}
+#heroCardMod {
+    background-color: #1E1E1E;
+    border: 1px solid #2D2D2D;
+    border-top: 3px solid #F59E0B;
+    border-radius: 4px;
+}
+#heroCardSafe {
+    background-color: #1E1E1E;
+    border: 1px solid #2D2D2D;
+    border-top: 3px solid #10B981;
+    border-radius: 4px;
+}
+#heroCardTotal {
+    background-color: #1E1E1E;
+    border: 1px solid #2D2D2D;
+    border-top: 3px solid #3B82F6;
+    border-radius: 4px;
+}
+
+#heroCount {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #FFFFFF;
+    background: transparent;
+}
+
+/* ── Container Cards ───────────────────────────────────────── */
+#slateCard {
+    background-color: #1E1E1E;
+    border: 1px solid #2D2D2D;
+    border-radius: 4px;
+}
+
+#slateCard QLabel {
+    background: transparent;
+}
+
+#cardHeader {
+    font-size: 11px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: 0.5px;
+    background: transparent;
+    padding: 0;
+}
+
+/* ── Form Inputs ────────────────────────────────────────────── */
+QLineEdit {
+    background-color: #121212;
+    color: #FFFFFF;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    padding: 6px 8px;
+    font-size: 12px;
+    selection-background-color: #3B82F6;
+    selection-color: #FFFFFF;
+}
+
+#targetInput,
+#projectInput,
+#searchFilterInput {
+    background-color: #121212;
+    color: #FFFFFF;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    padding: 6px 8px;
+    font-size: 12px;
+}
+#targetInput:focus,
+#projectInput:focus,
+#searchFilterInput:focus,
+QLineEdit:focus {
+    border: 1px solid #3B82F6;
+    background-color: #121212;
+}
+
+QLineEdit::placeholder {
+    color: #6B7280;
+}
+
+/* ── Checkboxes ─────────────────────────────────────────────── */
+QCheckBox {
+    color: #CBD5E1;
+    spacing: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: transparent;
+}
+QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #4B5563;
+    border-radius: 2px;
+    background-color: #121212;
+}
+QCheckBox::indicator:hover {
+    border-color: #3B82F6;
+}
+QCheckBox::indicator:checked {
+    background-color: #3B82F6;
+    border-color: #3B82F6;
+}
+
+/* ── Action Buttons ─────────────────────────────────────────── */
+#btnBrowse {
+    background-color: #262626;
+    color: #E2E8F0;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 11px;
+}
+#btnBrowse:hover {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+#btnAuditStart {
+    background-color: #3B82F6;
+    color: #FFFFFF;
+    border: 1px solid #2563EB;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 700;
+}
+#btnAuditStart:hover {
+    background-color: #2563EB;
+}
+#btnAuditStart:disabled {
+    background-color: #262626;
+    border-color: #333333;
+    color: #6B7280;
+}
+
+#btnAuditStop {
+    background-color: #450A0A;
+    color: #EF4444;
+    border: 1px solid #991B1B;
+    border-radius: 3px;
+    font-weight: 700;
+    font-size: 11px;
+}
+#btnAuditStop:hover {
+    background-color: #7F1D1D;
+    color: #FFFFFF;
+}
+#btnAuditStop:disabled {
+    border-color: #262626;
+    color: #4B5563;
+    background-color: transparent;
+}
+
+#btnHeaderExport,
+#btnGhostSmall {
+    background-color: #262626;
+    color: #E2E8F0;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    padding: 4px 12px;
+    font-weight: 600;
+    font-size: 11px;
+}
+#btnHeaderExport:hover,
+#btnGhostSmall:hover {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+#btnHeaderExport:disabled {
+    color: #4B5563;
+    border-color: #262626;
+    background-color: transparent;
+}
+
+/* ── Mosca Sliders ─────────────────────────────────────────── */
+QSlider#moscaSlider::groove:horizontal {
+    height: 5px;
+    background-color: #262626;
+    border-radius: 2px;
+}
+QSlider#moscaSlider::sub-page:horizontal {
+    background-color: #3B82F6;
+    border-radius: 2px;
+}
+QSlider#moscaSlider::handle:horizontal {
+    background-color: #FFFFFF;
+    border: 2px solid #3B82F6;
+    width: 14px;
+    height: 14px;
+    margin: -5px 0;
+    border-radius: 7px;
+}
+QSlider#moscaSlider::handle:horizontal:hover {
+    background-color: #60A5FA;
+}
+
+/* ── Verdict Labels ────────────────────────────────────────── */
+#verdictCrit {
+    font-size: 11px;
+    font-weight: 800;
+    color: #EF4444;
+    background: transparent;
+}
+#verdictWarn {
+    font-size: 11px;
+    font-weight: 800;
+    color: #F59E0B;
+    background: transparent;
+}
+#verdictSafe {
+    font-size: 11px;
+    font-weight: 800;
+    color: #10B981;
+    background: transparent;
+}
+
+#verdictDesc {
+    font-size: 10px;
+    color: #9CA3AF;
+    background: transparent;
+}
+
+/* ── CBOM Table View ───────────────────────────────────────── */
+#cbomTableView {
+    background-color: #181818;
+    alternate-background-color: #1E1E1E;
+    gridline-color: #2D2D2D;
+    border: 1px solid #2D2D2D;
+    border-radius: 4px;
+    selection-background-color: #1E3A8A;
+    selection-color: #FFFFFF;
+}
+
+#cbomTableView QHeaderView::section {
+    background-color: #222222;
+    color: #E2E8F0;
+    padding: 7px 10px;
+    border: none;
+    border-right: 1px solid #2D2D2D;
+    border-bottom: 1px solid #2D2D2D;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+#cbomTableView QHeaderView::section:hover {
+    background-color: #2A2A2A;
+}
+
+/* ── Code Snippet Area ─────────────────────────────────────── */
+#codeSnippetArea {
+    background-color: #121212;
+    color: #10B981;
+    border: 1px solid #2D2D2D;
+    border-radius: 3px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 11px;
+    padding: 6px;
+}
+
+/* ── Bottom Terminal Dock & Console Log ────────────────────── */
+#bottomDock,
+#logDock {
+    background-color: #0A0A0A;
+    border-top: 1px solid #262626;
+}
+
+#scanProgress {
+    background-color: #171717;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    color: #E5E5E5;
+    font-size: 10px;
+    font-weight: 700;
+}
+#scanProgress::chunk {
+    background-color: #3B82F6;
+    border-radius: 2px;
+}
+
+#btnLogToggle {
+    background-color: #171717;
+    color: #A3A3A3;
+    border: 1px solid #333333;
+    border-radius: 3px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 700;
+}
+#btnLogToggle:hover {
+    background-color: #262626;
+    color: #FFFFFF;
+}
+
+#terminalLog {
+    background-color: #050505;
+    color: #E2E8F0;
+    border: 1px solid #262626;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 11px;
+    padding: 6px 8px;
+    selection-background-color: #1D4ED8;
+    selection-color: #FFFFFF;
+}
+
+#telemetryLogEdit {
+    background-color: #050505;
+    color: #E2E8F0;
+    border: 1px solid #262626;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 11px;
+    padding: 4px 6px;
+}
+
+/* ── Scrollbars ────────────────────────────────────────────── */
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+}
+QScrollBar::handle:vertical {
+    background-color: #333333;
+    border-radius: 3px;
+    min-height: 20px;
+}
+QScrollBar::handle:vertical:hover {
+    background-color: #4B5563;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+QScrollBar:horizontal {
+    background: transparent;
+    height: 6px;
+}
+QScrollBar::handle:horizontal {
+    background-color: #333333;
+    border-radius: 3px;
+}
+QScrollBar::handle:horizontal:hover {
+    background-color: #4B5563;
+}
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+
+/* ── Page Canvas Backgrounds ───────────────────────────────── */
+#pageScrollArea {
+    background-color: #121212;
+    border: none;
+}
+#dashContainer,
+#cbomTab,
+#detailTab {
+    background-color: #121212;
+}
+
+/* ── Status Bar ────────────────────────────────────────────── */
+QStatusBar {
+    background-color: #1A1A1A;
+    color: #9CA3AF;
+    border-top: 1px solid #2D2D2D;
+    font-size: 11px;
+    padding: 2px 8px;
+}
+
+/* ── Tooltips & Dialogs ────────────────────────────────────── */
+QToolTip {
+    background-color: #2D2D2D;
+    color: #FFFFFF;
+    border: 1px solid #4B5563;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+QMessageBox {
+    background-color: #1E1E1E;
+}
