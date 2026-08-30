@@ -15,6 +15,9 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      - name: Set up MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -25,19 +28,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Qt 6 via aqtinstall
-        run: |
-          python -m pip install aqtinstall
-          python -m aqt install-qt windows desktop 6.7.2 win64_msvc2019_64 -m qtcharts qtsvg --outputdir C:\Qt
-          echo "Qt6_DIR=C:\Qt\6.7.2\msvc2019_64\lib\cmake\Qt6" >> $env:GITHUB_ENV
-          echo "C:\Qt\6.7.2\msvc2019_64\bin" >> $env:GITHUB_PATH
-
-      - name: Set up MSVC Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install Qt 6 via install-qt-action v4
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.2'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+          modules: 'qtcharts qtsvg'
+          cache: true
 
       - name: Configure CMake
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="C:\Qt\6.7.2\msvc2019_64\lib\cmake\Qt6"
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{ env.Qt6_DIR }}"
 
       - name: Build ECDAT Executable
         run: |
@@ -48,11 +51,15 @@ jobs:
           $deployDir = "build/Release/ECDAT_Windows_x64"
           New-Item -ItemType Directory -Force -Path $deployDir
           Copy-Item "build/Release/ecdat_app.exe" "$deployDir/"
-          Copy-Item -Recurse "AST-Parser-main 2/models" "$deployDir/models"
-          Copy-Item -Recurse "AST-Parser-main 2/rules" "$deployDir/rules"
+          if (Test-Path "AST-Parser-main 2/models") {
+            Copy-Item -Recurse "AST-Parser-main 2/models" "$deployDir/models"
+          }
+          if (Test-Path "AST-Parser-main 2/rules") {
+            Copy-Item -Recurse "AST-Parser-main 2/rules" "$deployDir/rules"
+          }
           
           # Run windeployqt to bundle all required Qt runtime DLLs
-          & "C:\Qt\6.7.2\msvc2019_64\bin\windeployqt.exe" --release "$deployDir/ecdat_app.exe"
+          windeployqt --release "$deployDir/ecdat_app.exe"
 
       - name: Create Release Zip Package
         run: |
