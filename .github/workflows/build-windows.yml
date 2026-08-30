@@ -57,37 +57,26 @@ jobs:
 
           if (Test-Path "models/ciphertext_ml_scanner.pkl") {
             Copy-Item "models/ciphertext_ml_scanner.pkl" "$deployDir/models/"
+            Copy-Item "models/ciphertext_ml_scanner.pkl" "$deployDir/"
           } elseif (Test-Path "ciphertext_ml_scanner.pkl") {
             Copy-Item "ciphertext_ml_scanner.pkl" "$deployDir/models/"
+            Copy-Item "ciphertext_ml_scanner.pkl" "$deployDir/"
           }
 
           if (Test-Path "AST-Parser-main 2/ml_engine/predict.py") {
             Copy-Item "AST-Parser-main 2/ml_engine/predict.py" "$deployDir/ml_engine/"
+            Copy-Item "AST-Parser-main 2/ml_engine/predict.py" "$deployDir/"
           }
 
           if (Test-Path "AST-Parser-main 2/rules/crypto_signatures.yar") {
             Copy-Item "AST-Parser-main 2/rules/crypto_signatures.yar" "$deployDir/rules/"
+            Copy-Item "AST-Parser-main 2/rules/crypto_signatures.yar" "$deployDir/"
           }
 
           Copy-Item "requirements.txt" "$deployDir/"
 
-          # Run windeployqt with compiler-runtime to bundle MSVC and Qt runtime DLLs
-          windeployqt --release --compiler-runtime "$deployDir/ecdat_app.exe"
-
-          # Copy MSVC CRT DLLs directly as a guaranteed fallback
-          $vcDirs = Get-ChildItem "C:\Program Files\Microsoft Visual Studio" -Recurse -Filter "msvcp140.dll" -ErrorAction SilentlyContinue
-          if ($vcDirs.Count -gt 0) {
-            $crtDir = $vcDirs[0].DirectoryName
-            Copy-Item "$crtDir\*.dll" "$deployDir/" -Force -ErrorAction SilentlyContinue
-          }
-
-          # Create 1-click Windows launcher script
-          @"
-          @echo off
-          title ECDAT - Enterprise Cryptographic Discovery & Assessment Tool
-          cd /d "%~dp0"
-          start "" "%~dp0ecdat_app.exe"
-          "@ | Out-File -FilePath "$deployDir/Launch_ECDAT.bat" -Encoding ascii
+          # Run windeployqt to package 64-bit Qt runtime and platforms
+          windeployqt --release "$deployDir/ecdat_app.exe"
 
       - name: Create Release Zip Package
         run: |
