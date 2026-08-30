@@ -1040,6 +1040,11 @@ void MainWindow::onScanCompleted(ecdat::FindingList allFindings) {
         m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_FILE_LINE, QHeaderView::Stretch);
     }
 
+    m_headerStatus->setText("✓ Complete");
+    m_headerStatus->setObjectName("statusComplete");
+    m_headerStatus->style()->unpolish(m_headerStatus);
+    m_headerStatus->style()->polish(m_headerStatus);
+
     onTabButtonClicked(1); // Switch to CBOM Grid
 }
 

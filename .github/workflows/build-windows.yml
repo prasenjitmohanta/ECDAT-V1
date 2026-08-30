@@ -71,8 +71,23 @@ jobs:
 
           Copy-Item "requirements.txt" "$deployDir/"
 
-          # Run windeployqt to bundle all required Qt runtime DLLs
-          windeployqt --release "$deployDir/ecdat_app.exe"
+          # Run windeployqt with compiler-runtime to bundle MSVC and Qt runtime DLLs
+          windeployqt --release --compiler-runtime "$deployDir/ecdat_app.exe"
+
+          # Copy MSVC CRT DLLs directly as a guaranteed fallback
+          $vcDirs = Get-ChildItem "C:\Program Files\Microsoft Visual Studio" -Recurse -Filter "msvcp140.dll" -ErrorAction SilentlyContinue
+          if ($vcDirs.Count -gt 0) {
+            $crtDir = $vcDirs[0].DirectoryName
+            Copy-Item "$crtDir\*.dll" "$deployDir/" -Force -ErrorAction SilentlyContinue
+          }
+
+          # Create 1-click Windows launcher script
+          @"
+          @echo off
+          title ECDAT - Enterprise Cryptographic Discovery & Assessment Tool
+          cd /d "%~dp0"
+          start "" "%~dp0ecdat_app.exe"
+          "@ | Out-File -FilePath "$deployDir/Launch_ECDAT.bat" -Encoding ascii
 
       - name: Create Release Zip Package
         run: |
