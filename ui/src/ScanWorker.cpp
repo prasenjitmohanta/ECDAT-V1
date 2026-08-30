@@ -76,6 +76,52 @@ static std::string getPqcReplacement(const std::string& algo, ecdat::Severity se
     return "NIST PQC Migration Recommended";
 }
 
+static std::vector<ecdat::CryptoAsset> scanCertOrConfig(const fs::path& filePath) {
+    std::vector<ecdat::CryptoAsset> assets;
+    std::ifstream file(filePath, std::ios::in | std::ios::binary);
+    if (!file.is_open()) return assets;
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string content = buffer.str();
+
+    // 1. Check for X.509 Certificates & PEM Key Material
+    if (content.find("-----BEGIN CERTIFICATE-----") != std::string::npos) {
+        assets.push_back({
+            filePath.string(), 1, ecdat::AssetType::Asymmetric, "RSA-2048 (X.509 Certificate)", 2048, "X.509 PEM",
+            ecdat::Severity::Critical, "HIGH", ecdat::SourceStage::Config_Scanner, "X.509 Certificate Container (PEM)"
+        });
+    }
+    if (content.find("-----BEGIN RSA PRIVATE KEY-----") != std::string::npos || content.find("-----BEGIN PRIVATE KEY-----") != std::string::npos) {
+        assets.push_back({
+            filePath.string(), 1, ecdat::AssetType::Asymmetric, "RSA Private Key", 2048, "PKCS#8 PEM",
+            ecdat::Severity::Critical, "HIGH", ecdat::SourceStage::Config_Scanner, "Hardcoded RSA Private Key Material"
+        });
+    }
+    if (content.find("-----BEGIN EC PRIVATE KEY-----") != std::string::npos) {
+        assets.push_back({
+            filePath.string(), 1, ecdat::AssetType::Asymmetric, "ECC Private Key (NIST P-256)", 256, "SEC1 PEM",
+            ecdat::Severity::Critical, "HIGH", ecdat::SourceStage::Config_Scanner, "Hardcoded Elliptic Curve Private Key"
+        });
+    }
+
+    // 2. Check for Insecure Protocol Configurations (TLS 1.0, TLS 1.1, SSLv3)
+    if (content.find("SSLv3") != std::string::npos || content.find("SSLv2") != std::string::npos) {
+        assets.push_back({
+            filePath.string(), 1, ecdat::AssetType::Protocol, "SSLv3 / Legacy Protocol", 0, "Protocol Config",
+            ecdat::Severity::Critical, "HIGH", ecdat::SourceStage::Config_Scanner, "Deprecated Protocol Suite (SSLv3)"
+        });
+    }
+    if (content.find("TLSv1") != std::string::npos || content.find("TLSv1.1") != std::string::npos || content.find("TLS 1.0") != std::string::npos) {
+        assets.push_back({
+            filePath.string(), 1, ecdat::AssetType::Protocol, "TLS 1.0 / 1.1", 0, "Protocol Config",
+            ecdat::Severity::Critical, "HIGH", ecdat::SourceStage::Config_Scanner, "Deprecated Protocol (TLS 1.0/1.1)"
+        });
+    }
+
+    return assets;
+}
+
 void ScanWorker::run() {
     try {
         fs::path root(m_targetPath.toStdString());
@@ -270,11 +316,17 @@ void ScanWorker::run() {
 
             bool isSrc = (ext == ".cpp" || ext == ".c" || ext == ".h" || ext == ".hpp" ||
                           ext == ".cc"  || ext == ".cxx" || ext == ".py" || ext == ".java" || ext == ".go");
+            bool isCert = (ext == ".pem" || ext == ".crt" || ext == ".cer" || ext == ".key" ||
+                           ext == ".pub" || ext == ".conf" || ext == ".config" || ext == ".yml" || ext == ".yaml");
 
             if (isSrc) {
                 // Stage 1: Static AST Source Scanner (Instant C++ Tree-Sitter)
                 auto astAssets = astScanner.scanFile(root);
                 for (const auto& a : astAssets) emitAsset(a);
+            } else if (isCert) {
+                // Stage 4: Certificate & Protocol Config Scanner
+                auto certAssets = scanCertOrConfig(root);
+                for (const auto& a : certAssets) emitAsset(a);
             } else {
                 // Stage 2: YARA Binary Signature Scanner
                 auto yaraAssets = yaraScanner.scanBinary(root);
@@ -323,10 +375,15 @@ void ScanWorker::run() {
                           ext == ".cc"  || ext == ".cxx" || ext == ".py" || ext == ".java" || ext == ".go");
             bool isBin = (ext == ".exe" || ext == ".dll" || ext == ".elf" || ext == ".so" ||
                           ext == ".bin" || ext == ".dat" || ext == ".raw" || ext == ".dylib");
+            bool isCert = (ext == ".pem" || ext == ".crt" || ext == ".cer" || ext == ".key" ||
+                           ext == ".pub" || ext == ".conf" || ext == ".config" || ext == ".yml" || ext == ".yaml");
 
             if (m_scanSource && isSrc) {
                 auto astAssets = astScanner.scanFile(filePath);
                 for (const auto& a : astAssets) emitAsset(a);
+            } else if (m_scanCert && isCert) {
+                auto certAssets = scanCertOrConfig(filePath);
+                for (const auto& a : certAssets) emitAsset(a);
             } else if (m_scanBinary && isBin) {
                 auto yaraAssets = yaraScanner.scanBinary(filePath);
                 if (!yaraAssets.empty()) {
