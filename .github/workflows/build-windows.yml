@@ -21,12 +21,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install Python ML Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install scikit-learn joblib pandas numpy scipy
 
       - name: Install Qt 6 via install-qt-action v4
         uses: jurplel/install-qt-action@v4
@@ -46,37 +46,55 @@ jobs:
         run: |
           cmake --build build --config Release --parallel
 
-      - name: Deploy Qt Runtime DLLs (windeployqt)
+      - name: Deploy Qt & Engine Runtime
         run: |
           $deployDir = "build/Release/ECDAT_Windows_x64"
           New-Item -ItemType Directory -Force -Path $deployDir
+          
+          # Copy main executable
           Copy-Item "build/Release/ecdat_app.exe" "$deployDir/"
+
+          # Create internal assets folders
           New-Item -ItemType Directory -Force -Path "$deployDir/models"
           New-Item -ItemType Directory -Force -Path "$deployDir/ml_engine"
           New-Item -ItemType Directory -Force -Path "$deployDir/rules"
 
-          if (Test-Path "models/ciphertext_ml_scanner.pkl") {
-            Copy-Item "models/ciphertext_ml_scanner.pkl" "$deployDir/models/"
-            Copy-Item "models/ciphertext_ml_scanner.pkl" "$deployDir/"
-          } elseif (Test-Path "ciphertext_ml_scanner.pkl") {
-            Copy-Item "ciphertext_ml_scanner.pkl" "$deployDir/models/"
-            Copy-Item "ciphertext_ml_scanner.pkl" "$deployDir/"
+          # Copy ML Models
+          Get-ChildItem -Path "models", "." -Filter "*.pkl" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            Copy-Item $_.FullName "$deployDir/models/" -Force
           }
 
-          if (Test-Path "AST-Parser-main 2/ml_engine/predict.py") {
-            Copy-Item "AST-Parser-main 2/ml_engine/predict.py" "$deployDir/ml_engine/"
-            Copy-Item "AST-Parser-main 2/ml_engine/predict.py" "$deployDir/"
+          # Copy ML Engine Predict Script
+          Get-ChildItem -Path "ml_engine", "." -Filter "predict.py" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            Copy-Item $_.FullName "$deployDir/ml_engine/" -Force
           }
 
-          if (Test-Path "AST-Parser-main 2/rules/crypto_signatures.yar") {
-            Copy-Item "AST-Parser-main 2/rules/crypto_signatures.yar" "$deployDir/rules/"
-            Copy-Item "AST-Parser-main 2/rules/crypto_signatures.yar" "$deployDir/"
+          # Copy YARA Signatures
+          Get-ChildItem -Path "rules", "." -Filter "crypto_signatures.yar" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            Copy-Item $_.FullName "$deployDir/rules/" -Force
           }
 
-          Copy-Item "requirements.txt" "$deployDir/"
+          # Copy requirements
+          if (Test-Path "requirements.txt") {
+            Copy-Item "requirements.txt" "$deployDir/"
+          }
 
-          # Run windeployqt to package 64-bit Qt runtime and platforms
-          windeployqt --release "$deployDir/ecdat_app.exe"
+          # Run windeployqt with all needed modules & compiler runtime
+          windeployqt --release --compiler-runtime --charts "$deployDir/ecdat_app.exe"
+
+          # Correctly copy Official Microsoft VC Redistributable CRT DLLs (ONLY msvcp & vcruntime)
+          $crtFiles = Get-ChildItem "C:\Program Files\Microsoft Visual Studio" -Recurse -Include "msvcp140.dll", "msvcp140_1.dll", "vcruntime140.dll", "vcruntime140_1.dll" -ErrorAction SilentlyContinue | Where-Object { $_.DirectoryName -like "*\VC\Redist\MSVC\*" -and $_.DirectoryName -like "*\x64\*" }
+          foreach ($file in $crtFiles) {
+            Copy-Item $file.FullName "$deployDir/" -Force -ErrorAction SilentlyContinue
+          }
+
+          # Create 1-click Windows launcher
+          @"
+          @echo off
+          title ECDAT - Enterprise Cryptographic Discovery & Assessment Tool
+          cd /d "%~dp0"
+          start "" "%~dp0ecdat_app.exe"
+          "@ | Out-File -FilePath "$deployDir/Launch_ECDAT.bat" -Encoding ascii
 
       - name: Create Release Zip Package
         run: |
