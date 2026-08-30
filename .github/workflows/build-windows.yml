@@ -121,12 +121,13 @@ jobs:
           }
 
           # Create 1-click Windows launcher
-          @"
-@echo off
-title ECDAT - Enterprise Cryptographic Discovery & Assessment Tool
-cd /d "%~dp0"
-start "" "%~dp0ecdat_app.exe"
-"@ | Out-File -FilePath "$deployDir/Launch_ECDAT.bat" -Encoding ascii
+          $batLines = @(
+            "@echo off",
+            "title ECDAT - Enterprise Cryptographic Discovery & Assessment Tool",
+            'cd /d "%~dp0"',
+            'start "" "%~dp0ecdat_app.exe"'
+          )
+          Set-Content -Path "$deployDir/Launch_ECDAT.bat" -Value $batLines -Encoding Ascii
 
       - name: Create Release Zip Package
         run: |
