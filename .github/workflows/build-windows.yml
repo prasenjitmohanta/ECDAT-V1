@@ -90,26 +90,12 @@ jobs:
             Copy-Item "requirements.txt" "$deployDir/" -Force
           }
 
-          # Download & Setup Official Windows Portable Python (Embeddable)
-          Write-Host "Downloading Python 3.11 Embeddable Package..."
-          Invoke-WebRequest -Uri "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip" -OutFile "python-embed.zip"
-          Expand-Archive -Path "python-embed.zip" -DestinationPath "$deployDir/python"
-          Remove-Item "python-embed.zip" -Force
-
-          # Enable site-packages in embedded python configuration
-          $pthFile = Get-ChildItem "$deployDir/python/*._pth" | Select-Object -First 1
-          if ($pthFile) {
-            $content = Get-Content $pthFile.FullName
-            $content = $content -replace '#import site', 'import site'
-            $content += "`n.`nLib/site-packages`n../ml_engine`n../models"
-            Set-Content -Path $pthFile.FullName -Value $content
-          }
-
-          # Copy Installed ML Site-Packages into Portable Python
-          $sitePackages = (python -c "import site; print(site.getsitepackages()[0])").Trim()
-          Write-Host "Copying pre-installed ML packages from: $sitePackages"
-          New-Item -ItemType Directory -Force -Path "$deployDir/python/Lib/site-packages"
-          Copy-Item "$sitePackages/*" "$deployDir/python/Lib/site-packages/" -Recurse -Force -ErrorAction SilentlyContinue
+          # Bundle complete Runner Python 3.12 environment directly into application
+          $pythonExePath = (Get-Command python).Source
+          $pythonRootDir = Split-Path $pythonExePath
+          Write-Host "Bundling complete standalone Python from: $pythonRootDir"
+          New-Item -ItemType Directory -Force -Path "$deployDir/python"
+          Copy-Item -Path "$pythonRootDir/*" -Destination "$deployDir/python/" -Recurse -Force -ErrorAction SilentlyContinue
 
           # Run windeployqt with all needed modules & compiler runtime
           windeployqt --release --compiler-runtime --charts "$deployDir/ecdat_app.exe"
