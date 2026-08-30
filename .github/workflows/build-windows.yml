@@ -59,24 +59,34 @@ jobs:
           New-Item -ItemType Directory -Force -Path "$deployDir/ml_engine"
           New-Item -ItemType Directory -Force -Path "$deployDir/rules"
 
-          # Copy ML Models
-          Get-ChildItem -Path "models", "." -Filter "*.pkl" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
-            Copy-Item $_.FullName "$deployDir/models/" -Force
+          # Copy ML Models from source
+          if (Test-Path "models/ciphertext_ml_scanner.pkl") {
+            Copy-Item "models/ciphertext_ml_scanner.pkl" "$deployDir/models/" -Force
+          }
+          if (Test-Path "ciphertext_ml_scanner.pkl") {
+            Copy-Item "ciphertext_ml_scanner.pkl" "$deployDir/models/" -Force
+          }
+          if (Test-Path "AST-Parser-main 2/models/ciphertext_ml_scanner.pkl") {
+            Copy-Item "AST-Parser-main 2/models/ciphertext_ml_scanner.pkl" "$deployDir/models/" -Force
           }
 
-          # Copy ML Engine Predict Script
-          Get-ChildItem -Path "ml_engine", "." -Filter "predict.py" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
-            Copy-Item $_.FullName "$deployDir/ml_engine/" -Force
+          # Copy ML Engine Predict Script from source
+          if (Test-Path "AST-Parser-main 2/ml_engine/predict.py") {
+            Copy-Item "AST-Parser-main 2/ml_engine/predict.py" "$deployDir/ml_engine/" -Force
+          } elseif (Test-Path "ml_engine/predict.py") {
+            Copy-Item "ml_engine/predict.py" "$deployDir/ml_engine/" -Force
           }
 
-          # Copy YARA Signatures
-          Get-ChildItem -Path "rules", "." -Filter "crypto_signatures.yar" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
-            Copy-Item $_.FullName "$deployDir/rules/" -Force
+          # Copy YARA Signatures from source
+          if (Test-Path "AST-Parser-main 2/rules/crypto_signatures.yar") {
+            Copy-Item "AST-Parser-main 2/rules/crypto_signatures.yar" "$deployDir/rules/" -Force
+          } elseif (Test-Path "rules/crypto_signatures.yar") {
+            Copy-Item "rules/crypto_signatures.yar" "$deployDir/rules/" -Force
           }
 
           # Copy requirements
           if (Test-Path "requirements.txt") {
-            Copy-Item "requirements.txt" "$deployDir/"
+            Copy-Item "requirements.txt" "$deployDir/" -Force
           }
 
           # Run windeployqt with all needed modules & compiler runtime
