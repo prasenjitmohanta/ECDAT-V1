@@ -19,18 +19,8 @@ void MlBridge::setModelTier(ModelTier tier) {
     if (tier == ModelTier::Light_6MB) {
         modelPath = "models/ecdat_rf_model_6mb.pkl";
     } else {
-        if (std::filesystem::exists("models/ciphertext_ml_scanner.pkl")) {
-            modelPath = "models/ciphertext_ml_scanner.pkl";
-        } else if (std::filesystem::exists("ciphertext_ml_scanner.pkl")) {
-            modelPath = "ciphertext_ml_scanner.pkl";
-        } else {
-            modelPath = "models/ecdat_rf_model_36mb.pkl";
-        }
+        modelPath = "models/ecdat_rf_model_36mb.pkl";
     }
-}
-
-void MlBridge::setModelPath(std::string path) {
-    modelPath = std::move(path);
 }
 
 std::vector<CryptoAsset> MlBridge::parseJsonBatch(const std::string& jsonStr) {
@@ -131,11 +121,12 @@ std::vector<CryptoAsset> MlBridge::triageBatch(const std::vector<std::filesystem
         }
     }
 
-    std::string cmd = "\"" + pythonExe + "\" \"" + script + "\" --model \"" + modelPath + "\" --manifest \"" + manifestPath.string() + "\"";
-
+    // Wrap executable and arguments in quotes to handle directory paths containing spaces (e.g. "AST Parser")
 #ifdef _WIN32
+    std::string cmd = "\"\"" + pythonExe + "\" \"" + script + "\" --model \"" + modelPath + "\" --manifest \"" + manifestPath.string() + "\"\"";
     FILE* pipe = _popen(cmd.c_str(), "r");
 #else
+    std::string cmd = "\"" + pythonExe + "\" \"" + script + "\" --model \"" + modelPath + "\" --manifest \"" + manifestPath.string() + "\"";
     FILE* pipe = popen(cmd.c_str(), "r");
 #endif
 

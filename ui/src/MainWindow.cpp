@@ -159,6 +159,8 @@ void MainWindow::setupUi() {
     m_tableModel = new CbomTableModel(this);
     if (m_tableView) {
         m_tableView->setModel(m_tableModel);
+        m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_PQC_REPLACEMENT, QHeaderView::Stretch);
+        m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_FILE_LINE, QHeaderView::Stretch);
     }
 }
 
@@ -594,8 +596,6 @@ QWidget* MainWindow::buildCbomTab() {
     m_tableView->horizontalHeader()->setHighlightSections(false);
     m_tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     m_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_PQC_REPLACEMENT, QHeaderView::Stretch);
-    m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_FILE_LINE, QHeaderView::Stretch);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(m_tableView, &QTableView::clicked, this, &MainWindow::onTableRowClicked);

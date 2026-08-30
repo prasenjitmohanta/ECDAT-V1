@@ -115,9 +115,13 @@ void ScanWorker::run() {
         // 2. Resolve Python interpreter
         std::string pythonExe = "";
 #ifdef _WIN32
+        QString username = qEnvironmentVariable("USERNAME");
         QStringList pyCandidates = {
             appDir.filePath("python/python.exe"),
             appDir.filePath("python.exe"),
+            "C:/Users/" + username + "/AppData/Local/Python/bin/python3.12.exe",
+            "C:/Users/" + username + "/AppData/Local/Programs/Python/Python312/python.exe",
+            "C:/Users/" + username + "/AppData/Local/Programs/Python/Python311/python.exe",
             "python.exe",
             "python",
             "py.exe",
