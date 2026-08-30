@@ -6,6 +6,8 @@
     <string>en</string>
     <key>CFBundleExecutable</key>
     <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+    <key>CFBundleIconFile</key>
+    <string>ecdat.icns</string>
     <key>CFBundleIdentifier</key>
     <string>org.ecdat.scanner</string>
     <key>CFBundleInfoDictionaryVersion</key>

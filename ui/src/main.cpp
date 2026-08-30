@@ -13,6 +13,7 @@
 
 #include <QApplication>
 #include <QFont>
+#include <QIcon>
 #include "../include/MainWindow.h"
 
 int main(int argc, char* argv[]) {
@@ -23,6 +24,7 @@ int main(int argc, char* argv[]) {
     app.setApplicationName("ECDAT");
     app.setApplicationVersion("1.0.0");
     app.setOrganizationName("SIH 2026 — NTRO");
+    app.setWindowIcon(QIcon(":/icons/icon.png"));
 
     // Set a clean default font for the whole app
     QFont defaultFont("Segoe UI", 10);

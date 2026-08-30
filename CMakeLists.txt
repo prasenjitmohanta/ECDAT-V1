@@ -106,9 +106,15 @@ if(WIN32)
     # Hide console in Release builds on Windows
     set_target_properties(ecdat_app PROPERTIES WIN32_EXECUTABLE $<IF:$<CONFIG:Debug>,FALSE,TRUE>)
 elseif(APPLE)
+    set(MACOSX_BUNDLE_ICON_FILE "ecdat.icns")
+    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ui/resources/icons/ecdat.icns" PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources"
+    )
+    target_sources(ecdat_app PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ui/resources/icons/ecdat.icns")
     set_target_properties(ecdat_app PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_BUNDLE_NAME "ECDAT"
+        MACOSX_BUNDLE_ICON_FILE "ecdat.icns"
         MACOSX_BUNDLE_GUI_IDENTIFIER "org.ecdat.scanner"
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/ui/resources/Info.plist.in"
     )

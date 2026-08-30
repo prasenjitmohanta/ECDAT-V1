@@ -2,5 +2,7 @@
   <qresource prefix="/">
     <file>styles/ecdat_dark.qss</file>
     <file>styles/ecdat_light.qss</file>
+    <file>icons/textlogo.png</file>
+    <file>icons/icon.png</file>
   </qresource>
 </RCC>

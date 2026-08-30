@@ -34,6 +34,7 @@
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     setWindowTitle("ECDAT — Enterprise Cryptographic Discovery & Assessment Tool");
+    setWindowIcon(QIcon(":/icons/icon.png"));
     resize(1240, 840);
     setMinimumSize(960, 680);
 
@@ -173,15 +174,15 @@ QWidget* MainWindow::buildHeaderBar() {
     hl->setContentsMargins(16, 0, 16, 0);
     hl->setSpacing(12);
 
-    // Codeforces 3-Bar Mark + Brand
-    QLabel* brandLogo = new QLabel("<span style='font-size:15px;letter-spacing:1px;font-weight:800;'>"
-                                   "<span style='color:#F59E0B;'>▌</span>"
-                                   "<span style='color:#3182CE;'>▌</span>"
-                                   "<span style='color:#EF4444;'>▌</span>"
-                                   " <span style='color:#0F172A;font-weight:900;'>ECDAT</span>"
-                                   "<span style='font-size:10px;font-weight:600;color:#64748B;'> | PQC Audit Engine</span>"
-                                   "</span>");
+    // Brand Text Logo (textlogo.png)
+    QLabel* brandLogo = new QLabel;
     brandLogo->setObjectName("brandLogo");
+    QPixmap logoPix(":/icons/textlogo.png");
+    if (!logoPix.isNull()) {
+        brandLogo->setPixmap(logoPix.scaledToHeight(28, Qt::SmoothTransformation));
+    } else {
+        brandLogo->setText("<span style='font-size:15px;font-weight:900;color:#38BDF8;'>ECDAT</span>");
+    }
     hl->addWidget(brandLogo);
 
     hl->addSpacing(8);
