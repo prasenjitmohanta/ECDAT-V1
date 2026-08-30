@@ -19,8 +19,18 @@ void MlBridge::setModelTier(ModelTier tier) {
     if (tier == ModelTier::Light_6MB) {
         modelPath = "models/ecdat_rf_model_6mb.pkl";
     } else {
-        modelPath = "models/ecdat_rf_model_36mb.pkl";
+        if (std::filesystem::exists("models/ciphertext_ml_scanner.pkl")) {
+            modelPath = "models/ciphertext_ml_scanner.pkl";
+        } else if (std::filesystem::exists("ciphertext_ml_scanner.pkl")) {
+            modelPath = "ciphertext_ml_scanner.pkl";
+        } else {
+            modelPath = "models/ecdat_rf_model_36mb.pkl";
+        }
     }
+}
+
+void MlBridge::setModelPath(std::string path) {
+    modelPath = std::move(path);
 }
 
 std::vector<CryptoAsset> MlBridge::parseJsonBatch(const std::string& jsonStr) {

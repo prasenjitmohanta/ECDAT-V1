@@ -52,15 +52,25 @@ jobs:
           New-Item -ItemType Directory -Force -Path $deployDir
           Copy-Item "build/Release/ecdat_app.exe" "$deployDir/"
           New-Item -ItemType Directory -Force -Path "$deployDir/models"
+          New-Item -ItemType Directory -Force -Path "$deployDir/ml_engine"
+          New-Item -ItemType Directory -Force -Path "$deployDir/rules"
+
           if (Test-Path "models/ciphertext_ml_scanner.pkl") {
             Copy-Item "models/ciphertext_ml_scanner.pkl" "$deployDir/models/"
           } elseif (Test-Path "ciphertext_ml_scanner.pkl") {
             Copy-Item "ciphertext_ml_scanner.pkl" "$deployDir/models/"
           }
-          if (Test-Path "AST-Parser-main 2/rules") {
-            Copy-Item -Recurse "AST-Parser-main 2/rules" "$deployDir/rules"
+
+          if (Test-Path "AST-Parser-main 2/ml_engine/predict.py") {
+            Copy-Item "AST-Parser-main 2/ml_engine/predict.py" "$deployDir/ml_engine/"
           }
-          
+
+          if (Test-Path "AST-Parser-main 2/rules/crypto_signatures.yar") {
+            Copy-Item "AST-Parser-main 2/rules/crypto_signatures.yar" "$deployDir/rules/"
+          }
+
+          Copy-Item "requirements.txt" "$deployDir/"
+
           # Run windeployqt to bundle all required Qt runtime DLLs
           windeployqt --release "$deployDir/ecdat_app.exe"
 

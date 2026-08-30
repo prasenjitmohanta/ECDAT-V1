@@ -23,6 +23,7 @@ public:
     ~MlBridge();
 
     void setModelTier(ModelTier tier);
+    void setModelPath(std::string path);
 
     // Single File Triage
     std::optional<CryptoAsset> triageBinaryBlob(const std::filesystem::path& filePath);

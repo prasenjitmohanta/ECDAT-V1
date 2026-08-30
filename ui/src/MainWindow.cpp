@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     setupUi();
     setupMenuBar();
     loadHistoryFromDisk();
-    applyTheme(false); // Default: Clean Light Mode
+    applyTheme(true); // Default: Obsidian Dark Mode
     updateMoscaDashboard();
 }
 
@@ -580,7 +580,7 @@ QWidget* MainWindow::buildCbomTab() {
 
     vl->addLayout(bar);
 
-    // Codeforces 8-Column Table
+    // Codeforces High-Contrast Table
     m_tableView = new QTableView;
     m_tableView->setObjectName("cbomTable");
     m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -588,9 +588,13 @@ QWidget* MainWindow::buildCbomTab() {
     m_tableView->setAlternatingRowColors(true);
     m_tableView->setShowGrid(true);
     m_tableView->verticalHeader()->setVisible(false);
-    m_tableView->verticalHeader()->setDefaultSectionSize(32);
-    m_tableView->horizontalHeader()->setStretchLastSection(true);
+    m_tableView->verticalHeader()->setDefaultSectionSize(34);
+    m_tableView->horizontalHeader()->setStretchLastSection(false);
     m_tableView->horizontalHeader()->setHighlightSections(false);
+    m_tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_PQC_REPLACEMENT, QHeaderView::Stretch);
+    m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_FILE_LINE, QHeaderView::Stretch);
     m_tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(m_tableView, &QTableView::clicked, this, &MainWindow::onTableRowClicked);
@@ -1029,10 +1033,11 @@ void MainWindow::onScanCompleted(ecdat::FindingList allFindings) {
             .arg(m_findings.size()).arg(m_critCount).arg(m_modCount).arg(m_safeCount), "#10B981");
     }
 
-    m_headerStatus->setText("✓ Complete");
-    m_headerStatus->setObjectName("statusComplete");
-    m_headerStatus->style()->unpolish(m_headerStatus);
-    m_headerStatus->style()->polish(m_headerStatus);
+    if (m_tableView) {
+        m_tableView->resizeColumnsToContents();
+        m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_PQC_REPLACEMENT, QHeaderView::Stretch);
+        m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_FILE_LINE, QHeaderView::Stretch);
+    }
 
     onTabButtonClicked(1); // Switch to CBOM Grid
 }
@@ -1537,8 +1542,11 @@ void MainWindow::onLoadHistoryRecord(int index) {
     updateStatCards();
     updateMoscaDashboard();
 
-    log(QString("📂 Restored past audit record [%1] from %2 (%3 assets cataloged).")
-        .arg(rec.id).arg(rec.timestamp).arg(rec.totalAssets), "#3182CE");
+    if (m_tableView) {
+        m_tableView->resizeColumnsToContents();
+        m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_PQC_REPLACEMENT, QHeaderView::Stretch);
+        m_tableView->horizontalHeader()->setSectionResizeMode(CbomTableModel::COL_FILE_LINE, QHeaderView::Stretch);
+    }
 
     onTabButtonClicked(1); // Jump to CBOM Inventory
 }

@@ -11,6 +11,8 @@
 #include "../../core/include/MoscaEngine.h"
 
 #include <QThread>
+#include <QCoreApplication>
+#include <QDir>
 #include <filesystem>
 #include <algorithm>
 #include <fstream>
@@ -87,23 +89,113 @@ void ScanWorker::run() {
         ecdat::AstScanner  astScanner;
         ecdat::YaraScanner yaraScanner;
 
-        // Resolve absolute & relative YARA rules path
-        std::string rulesPath = "/Users/prasenjit/Desktop/SIH/ECDAT/AST-Parser-main 2/rules/crypto_signatures.yar";
-        if (!fs::exists(rulesPath)) rulesPath = "AST-Parser-main 2/rules/crypto_signatures.yar";
-        if (!fs::exists(rulesPath)) rulesPath = "rules/crypto_signatures.yar";
-        if (fs::exists(rulesPath)) {
+        QString appDirStr = QCoreApplication::applicationDirPath();
+        QDir appDir(appDirStr);
+
+        // 1. Resolve YARA rules path
+        std::string rulesPath = "";
+        QStringList ruleCandidates = {
+            appDir.filePath("rules/crypto_signatures.yar"),
+            appDir.filePath("../Resources/rules/crypto_signatures.yar"),
+            appDir.filePath("AST-Parser-main 2/rules/crypto_signatures.yar"),
+            "rules/crypto_signatures.yar",
+            "AST-Parser-main 2/rules/crypto_signatures.yar",
+            "/Users/prasenjit/Desktop/SIH/ECDAT/AST-Parser-main 2/rules/crypto_signatures.yar"
+        };
+        for (const auto& rc : ruleCandidates) {
+            if (fs::exists(rc.toStdString())) {
+                rulesPath = rc.toStdString();
+                break;
+            }
+        }
+        if (!rulesPath.empty()) {
             yaraScanner.loadRules(rulesPath);
         }
 
-        // Resolve Python & ML Script
-        std::string pythonExe = "/Users/prasenjit/miniconda3/bin/python3";
-        if (!fs::exists(pythonExe)) pythonExe = "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3";
-        if (!fs::exists(pythonExe)) pythonExe = "python3";
+        // 2. Resolve Python interpreter
+        std::string pythonExe = "";
+#ifdef _WIN32
+        QStringList pyCandidates = {
+            appDir.filePath("python/python.exe"),
+            appDir.filePath("python.exe"),
+            "python.exe",
+            "python",
+            "py.exe",
+            "py"
+        };
+#else
+        QStringList pyCandidates = {
+            "/Users/prasenjit/miniconda3/bin/python3",
+            "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3",
+            "/opt/homebrew/bin/python3",
+            "/usr/local/bin/python3",
+            "/usr/bin/python3",
+            "python3",
+            "python"
+        };
+#endif
+        for (const auto& pc : pyCandidates) {
+            if (pc.contains('/') || pc.contains('\\')) {
+                if (fs::exists(pc.toStdString())) {
+                    pythonExe = pc.toStdString();
+                    break;
+                }
+            } else {
+                pythonExe = pc.toStdString();
+                break;
+            }
+        }
+        if (pythonExe.empty()) {
+#ifdef _WIN32
+            pythonExe = "python";
+#else
+            pythonExe = "python3";
+#endif
+        }
 
-        std::string mlScript = "/Users/prasenjit/Desktop/SIH/ECDAT/AST-Parser-main 2/ml_engine/predict.py";
-        if (!fs::exists(mlScript)) mlScript = "AST-Parser-main 2/ml_engine/predict.py";
+        // 3. Resolve ML script (predict.py)
+        std::string mlScript = "";
+        QStringList scriptCandidates = {
+            appDir.filePath("ml_engine/predict.py"),
+            appDir.filePath("predict.py"),
+            appDir.filePath("../Resources/ml_engine/predict.py"),
+            appDir.filePath("AST-Parser-main 2/ml_engine/predict.py"),
+            "ml_engine/predict.py",
+            "AST-Parser-main 2/ml_engine/predict.py",
+            "predict.py",
+            "/Users/prasenjit/Desktop/SIH/ECDAT/AST-Parser-main 2/ml_engine/predict.py"
+        };
+        for (const auto& sc : scriptCandidates) {
+            if (fs::exists(sc.toStdString())) {
+                mlScript = sc.toStdString();
+                break;
+            }
+        }
+
+        // 4. Resolve Model File (.pkl)
+        std::string modelFile = "";
+        QStringList modelCandidates = {
+            appDir.filePath("models/ciphertext_ml_scanner.pkl"),
+            appDir.filePath("models/ecdat_rf_model_36mb.pkl"),
+            appDir.filePath("ciphertext_ml_scanner.pkl"),
+            appDir.filePath("../Resources/models/ciphertext_ml_scanner.pkl"),
+            "models/ciphertext_ml_scanner.pkl",
+            "models/ecdat_rf_model_36mb.pkl",
+            "ciphertext_ml_scanner.pkl",
+            "AST-Parser-main 2/models/ciphertext_ml_scanner.pkl",
+            "/Users/prasenjit/Desktop/SIH/ECDAT/models/ciphertext_ml_scanner.pkl"
+        };
+        for (const auto& mc : modelCandidates) {
+            if (fs::exists(mc.toStdString())) {
+                modelFile = mc.toStdString();
+                break;
+            }
+        }
 
         ecdat::MlBridge mlBridge(pythonExe, mlScript, ecdat::ModelTier::Full_36MB);
+        if (!modelFile.empty()) {
+            mlBridge.setModelPath(modelFile);
+        }
 
         ecdat::FindingList allFindings;
 

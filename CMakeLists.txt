@@ -114,13 +114,21 @@ elseif(APPLE)
     )
 endif()
 
-# ── Post-Build: Ensure models are copied to build output directory ──
+# ── Post-Build: Ensure models, ml_engine, and rules are copied to build output directory ──
 add_custom_command(TARGET ecdat_app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:ecdat_app>/models"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:ecdat_app>/ml_engine"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:ecdat_app>/rules"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/models/ciphertext_ml_scanner.pkl"
         "$<TARGET_FILE_DIR:ecdat_app>/models/ciphertext_ml_scanner.pkl"
-    COMMENT "Copying ML model weights to build output directory"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/AST-Parser-main 2/ml_engine/predict.py"
+        "$<TARGET_FILE_DIR:ecdat_app>/ml_engine/predict.py"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/AST-Parser-main 2/rules/crypto_signatures.yar"
+        "$<TARGET_FILE_DIR:ecdat_app>/rules/crypto_signatures.yar"
+    COMMENT "Bundling ML models, Python engine, and YARA rules with executable"
 )
 
 # ── Install Target ────────────────────────────────────────────
