@@ -60,15 +60,12 @@ jobs:
           New-Item -ItemType Directory -Force -Path "$deployDir/rules"
           New-Item -ItemType Directory -Force -Path "$deployDir/python"
 
-          # Copy ML Models from all sources
+          # Copy ML Models strictly from models/ folder
           if (Test-Path "models") {
             Copy-Item "models/*.pkl" "$deployDir/models/" -Force -ErrorAction SilentlyContinue
           }
           if (Test-Path "AST-Parser-main 2/models") {
             Copy-Item "AST-Parser-main 2/models/*.pkl" "$deployDir/models/" -Force -ErrorAction SilentlyContinue
-          }
-          if (Test-Path "ciphertext_ml_scanner.pkl") {
-            Copy-Item "ciphertext_ml_scanner.pkl" "$deployDir/models/" -Force -ErrorAction SilentlyContinue
           }
 
           # Copy ML Engine Predict Script from source
