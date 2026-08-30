@@ -179,15 +179,14 @@ void ScanWorker::run() {
         // 4. Resolve Model File (.pkl)
         std::string modelFile = "";
         QStringList modelCandidates = {
-            appDir.filePath("models/ciphertext_ml_scanner.pkl"),
             appDir.filePath("models/ecdat_rf_model_36mb.pkl"),
+            appDir.filePath("models/ciphertext_ml_scanner.pkl"),
+            appDir.filePath("models/ecdat_rf_model_6mb.pkl"),
             appDir.filePath("ciphertext_ml_scanner.pkl"),
-            appDir.filePath("../Resources/models/ciphertext_ml_scanner.pkl"),
-            "models/ciphertext_ml_scanner.pkl",
+            appDir.filePath("../Resources/models/ecdat_rf_model_36mb.pkl"),
             "models/ecdat_rf_model_36mb.pkl",
-            "ciphertext_ml_scanner.pkl",
-            "AST-Parser-main 2/models/ciphertext_ml_scanner.pkl",
-            "/Users/prasenjit/Desktop/SIH/ECDAT/models/ciphertext_ml_scanner.pkl"
+            "models/ciphertext_ml_scanner.pkl",
+            "models/ecdat_rf_model_6mb.pkl"
         };
         for (const auto& mc : modelCandidates) {
             if (fs::exists(mc.toStdString())) {
