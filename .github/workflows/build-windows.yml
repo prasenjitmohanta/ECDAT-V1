@@ -51,8 +51,11 @@ jobs:
           $deployDir = "build/Release/ECDAT_Windows_x64"
           New-Item -ItemType Directory -Force -Path $deployDir
           Copy-Item "build/Release/ecdat_app.exe" "$deployDir/"
-          if (Test-Path "AST-Parser-main 2/models") {
-            Copy-Item -Recurse "AST-Parser-main 2/models" "$deployDir/models"
+          New-Item -ItemType Directory -Force -Path "$deployDir/models"
+          if (Test-Path "models/ciphertext_ml_scanner.pkl") {
+            Copy-Item "models/ciphertext_ml_scanner.pkl" "$deployDir/models/"
+          } elseif (Test-Path "ciphertext_ml_scanner.pkl") {
+            Copy-Item "ciphertext_ml_scanner.pkl" "$deployDir/models/"
           }
           if (Test-Path "AST-Parser-main 2/rules") {
             Copy-Item -Recurse "AST-Parser-main 2/rules" "$deployDir/rules"

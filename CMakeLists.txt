@@ -114,12 +114,12 @@ elseif(APPLE)
     )
 endif()
 
-# ── Post-Build: Ensure models & rules are copied to build tree ─
+# ── Post-Build: Ensure models are copied to build output directory ──
 add_custom_command(TARGET ecdat_app POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:ecdat_app>/models
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:ecdat_app>/models"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/AST-Parser-main 2/models/ciphertext_ml_scanner.pkl"
-        $<TARGET_FILE_DIR:ecdat_app>/models/ciphertext_ml_scanner.pkl
+        "${CMAKE_SOURCE_DIR}/models/ciphertext_ml_scanner.pkl"
+        "$<TARGET_FILE_DIR:ecdat_app>/models/ciphertext_ml_scanner.pkl"
     COMMENT "Copying ML model weights to build output directory"
 )
 
