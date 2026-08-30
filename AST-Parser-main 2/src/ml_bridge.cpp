@@ -23,6 +23,10 @@ void MlBridge::setModelTier(ModelTier tier) {
     }
 }
 
+void MlBridge::setModelPath(std::string path) {
+    modelPath = std::move(path);
+}
+
 std::vector<CryptoAsset> MlBridge::parseJsonBatch(const std::string& jsonStr) {
     std::vector<CryptoAsset> assets;
     if (jsonStr.empty() || jsonStr.find("[") == std::string::npos) {
